@@ -1,0 +1,56 @@
+name: Release APK
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    name: Build & Release APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Restaurar arquivo .env
+        run: |
+          mkdir -p assets/env
+          echo "${{ secrets.ENV_FILE }}" > assets/env/.env.dev
+
+      - name: Instalar dependências
+        run: flutter pub get
+
+      - name: Build APK release
+        run: flutter build apk --release
+
+      - name: Renomear APK com versão
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/agenda-${VERSION}.apk
+
+      - name: Criar GitHub Release e anexar APK
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Agenda ${{ github.ref_name }}"
+          body: |
+            ## 📦 Release ${{ github.ref_name }}
+            
+            Baixe o APK abaixo para instalar no Android.
+          files: build/app/outputs/flutter-apk/agenda-${{ github.ref_name }}.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

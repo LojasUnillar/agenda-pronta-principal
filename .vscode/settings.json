@@ -1,0 +1,16 @@
+{
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "PostgreSQL",
+            "name": "Agenda",
+            "connectString": "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+        }
+    ],
+    "deno.enablePaths": [
+        "supabase/functions"
+    ],
+    "deno.importMap": "./supabase/functions/deno.json"
+}
