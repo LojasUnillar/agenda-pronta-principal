@@ -32,6 +32,10 @@ jobs:
           mkdir -p assets/env
           echo "${{ secrets.ENV_FILE }}" > assets/env/.env.dev
 
+      - name: Restaurar google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+
       - name: Instalar dependências
         run: flutter pub get
 
